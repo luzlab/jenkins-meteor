@@ -49,17 +49,22 @@ ENV LANGUAGE en_US.UTF-8
 ENV JENKINS_JAVA_OPTIONS "-Duser.timezone=America/Los_Angeles"
 
 # Install deps for FATHOM software
-RUN apt-get install -y \
+RUN apt-get update && \
+  apt-get install -y \
   libsasl2-dev \
   pkg-config \
   liblz4-dev \
   openssl \
   libssl-dev \
-  zlib1g-dev
+  zlib1g-dev \
+  gosu
 
-# Install docker
-RUN apt-get install -y docker
+# Entrypoint does a few things:
+# 1. If necessary, creates a group called docker inside the container with the same gid as parent, and adds
+#    the 'jenkins' user to the newly created 'docker' group.
+# 2. Runs Jenkins entrypoint as the regular user (see 'jenkins' Dockerfile) so Jenkins doesn't run as `root`
 
-# Switch to the regular user (as specified in the 'jenkins' container) so
-# jenkins doesn't run as `root`
-USER jenkins
+COPY ["./docker-entrypoint.sh", "/"]
+RUN chmod 755 /docker-entrypoint.sh
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
