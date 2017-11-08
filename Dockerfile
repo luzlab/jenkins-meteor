@@ -31,6 +31,7 @@ RUN curl https://install.meteor.com | /bin/sh
 RUN pip install --upgrade pip
 RUN pip install --upgrade virtualenv
 RUN pip install awscli
+RUN pip install docker-compose
 
 # Set locale (needed to start MongoDB)
 RUN echo "America/Los_Angeles" > /etc/timezone && \
